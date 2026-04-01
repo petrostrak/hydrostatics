@@ -1,0 +1,20 @@
+# Build output
+/target
+
+# Cargo lock (keep this if it's a binary, remove if it's a library)
+# Cargo.lock
+
+# Environment variables
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cargo lock
+Cargo.lock

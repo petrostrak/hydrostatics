@@ -16,15 +16,6 @@ struct Hull {
     num_stations: Option<usize>, // Number of stations for sectional area curve (default: 21)
 }
 
-impl Hydrostatics {
-    fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        Self {
-            stl_file: "open_a_file".to_string(),
-            hull: Hull::default(),
-        }
-    }
-}
-
 impl eframe::App for Hydrostatics {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
         egui::CentralPanel::default_margins().show_inside(ui, |_i| {

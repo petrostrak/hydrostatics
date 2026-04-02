@@ -26,8 +26,8 @@ impl Hydrostatics {
 }
 
 impl eframe::App for Hydrostatics {
-    fn ui(&mut self, ui: &mut Ui, frame: &mut Frame) {
-        egui::CentralPanel::default_margins().show_inside(ui, |i| {
+    fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        egui::CentralPanel::default_margins().show_inside(ui, |_i| {
 
         });
     }

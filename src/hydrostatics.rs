@@ -1,9 +1,12 @@
+use std::ffi::{OsString};
+use std::path::PathBuf;
 use eframe::Frame;
 use egui::Ui;
+use navaltoolbox;
 
 #[derive(Default)]
 pub(crate) struct Hydrostatics {
-    stl_file: String,
+    stl_file: PathBuf,
     hull: Hull,
 }
 
@@ -18,8 +21,18 @@ struct Hull {
 
 impl eframe::App for Hydrostatics {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
-        egui::CentralPanel::default_margins().show_inside(ui, |_i| {
+        egui::CentralPanel::default_margins().show_inside(ui, |ui_content| {
+            ui_content.label(format!("File loaded: {:?}", self.stl_file));
+            if ui_content.button("Load Hydrostatics").clicked() {
+                if let Some(path) = rfd::FileDialog::new().
+                    add_filter("stl", &["stl"]).
+                    pick_file()
+                {
+                    self.stl_file = path
+                }
 
+                let _hull = navaltoolbox::Hull::from_stl(self.stl_file.to_str().unwrap()).unwrap();
+            }
         });
     }
 }

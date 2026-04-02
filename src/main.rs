@@ -1,6 +1,7 @@
 use crate::hydrostatics::Hydrostatics;
 
 mod hydrostatics;
+pub mod density_of_water;
 
 fn main() -> eframe::Result<()>{
     eframe::run_native(

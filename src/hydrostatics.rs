@@ -1,8 +1,8 @@
-use std::ffi::{OsString};
 use std::path::PathBuf;
 use eframe::Frame;
 use egui::Ui;
-use navaltoolbox;
+use navaltoolbox::{Hull as NavalHull, HydrostaticsCalculator, Vessel};
+use crate::density_of_water::{density,Temp, WaterType};
 
 #[derive(Default)]
 pub(crate) struct Hydrostatics {
@@ -31,7 +31,10 @@ impl eframe::App for Hydrostatics {
                     self.stl_file = path
                 }
 
-                let _hull = navaltoolbox::Hull::from_stl(self.stl_file.to_str().unwrap()).unwrap();
+                let hull = NavalHull::from_stl(self.stl_file.to_str().unwrap()).unwrap();
+                let vessel = Vessel::new(hull);
+                let _calc = HydrostaticsCalculator::new(&vessel, density(WaterType::Salt, Temp::Twenty));
+                println!("Calculated vessel")
             }
         });
     }

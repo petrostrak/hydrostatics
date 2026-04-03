@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::ptr::eq;
 use eframe::Frame;
 use egui::Ui;
+use egui_notify::{Toasts};
 use navaltoolbox::{Hull as NavalHull, HydrostaticsCalculator, Vessel};
 use crate::density_of_water::{density, WaterTemperature, WaterType};
 
@@ -11,6 +12,7 @@ pub(crate) struct Hydrostatics {
     hull: Hull,
     water_type: WaterType,
     water_temp: WaterTemperature,
+    toasts: Toasts
 }
 
 #[derive(Default)]
@@ -32,15 +34,26 @@ impl Hydrostatics {
         }
     }
 
-    fn run_calculations(&mut self) {
-        let Some(path_str) = self.stl_file.to_str() else { return; };
+    fn run_calculations(&mut self, ctx: &egui::Context) {
+        let Some(path_str) = self.stl_file.to_str() else {
+            self.toasts.info("You must load an .stl file first.");
+            ctx.request_repaint();
+            return;
+        };
 
-        if let Ok(hull) = NavalHull::from_stl(path_str) {
-            let vessel = Vessel::new(hull);
-            let rho = density(&mut self.water_type, &mut self.water_temp);
-            let _calc = HydrostaticsCalculator::new(&vessel, rho);
+        match NavalHull::from_stl(path_str) {
+            Ok(hull) => {
+                let vessel = Vessel::new(hull);
+                let rho = density(&mut self.water_type, &mut self.water_temp);
+                let _calc = HydrostaticsCalculator::new(&vessel, rho);
 
-            println!("Calculated vessel displacement/hydrostatics");
+                self.toasts.success("Hydrostatics Calculated Successfully!");
+                ctx.request_repaint();
+            }
+            Err(e) => {
+                self.toasts.error(format!("STL Error: {}", e));
+                ctx.request_repaint();
+            }
         }
     }
 
@@ -63,8 +76,7 @@ impl Hydrostatics {
                     ui.selectable_value(&mut self.water_temp, WaterTemperature::Thirty, "30°C");
                 });
         });
-
-        ui.add_space(20.0);
+        ui.separator();
     }
 
     fn display_footer(&mut self, ui: &mut Ui) {
@@ -91,9 +103,11 @@ impl eframe::App for Hydrostatics {
         egui::CentralPanel::default_margins().show_inside(ui, |ui| {
             self.display_combo_box(ui);
             if ui.button("Load Hydrostatics").clicked() {
-                self.run_calculations();
+                self.run_calculations(ui.ctx());
             }
         });
+
+        self.toasts.show(ui.ctx());
     }
 }
 

@@ -40,12 +40,25 @@ impl Hydrostatics {
             println!("Calculated vessel displacement/hydrostatics");
         }
     }
+
+    fn display_footer(&mut self, ui: &mut Ui) {
+        ui.horizontal(|ui| {
+            ui.label("File loaded: ");
+            ui.label(self.stl_file.to_str().unwrap());
+        });
+    }
 }
 
 impl eframe::App for Hydrostatics {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
+        egui::Panel::bottom("footer_panel")
+            .resizable(false)
+            .min_size(30.0)
+            .show_inside(ui, |ui_content| {
+                self.display_footer(ui_content)
+            });
+
         egui::CentralPanel::default_margins().show_inside(ui, |ui_content| {
-            ui_content.label(format!("File loaded: {:?}", self.stl_file));
             if ui_content.button("Load Hydrostatics").clicked() {
                 self.open_file();
                 self.run_calculations();

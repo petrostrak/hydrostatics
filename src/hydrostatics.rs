@@ -1,5 +1,4 @@
 use std::path::PathBuf;
-use std::ptr::eq;
 use eframe::Frame;
 use egui::Ui;
 use egui_notify::{Toasts};
@@ -12,6 +11,7 @@ pub(crate) struct Hydrostatics {
     hull: Hull,
     water_type: WaterType,
     water_temp: WaterTemperature,
+    
     toasts: Toasts
 }
 

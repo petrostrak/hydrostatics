@@ -19,23 +19,38 @@ struct Hull {
     num_stations: Option<usize>, // Number of stations for sectional area curve (default: 21)
 }
 
+impl Hydrostatics {
+    fn open_file(&mut self) {
+        if let Some(path) = rfd::FileDialog::new().
+            add_filter("stl", &["stl"]).
+            pick_file()
+        {
+            self.stl_file = path
+        }
+    }
+
+    fn run_calculations(&mut self) {
+        let Some(path_str) = self.stl_file.to_str() else { return; };
+
+        if let Ok(hull) = NavalHull::from_stl(path_str) {
+            let vessel = Vessel::new(hull);
+            let rho = density(WaterType::Salt, Temp::Twenty);
+            let _calc = HydrostaticsCalculator::new(&vessel, rho);
+
+            println!("Calculated vessel displacement/hydrostatics");
+        }
+    }
+}
+
 impl eframe::App for Hydrostatics {
     fn ui(&mut self, ui: &mut Ui, _frame: &mut Frame) {
         egui::CentralPanel::default_margins().show_inside(ui, |ui_content| {
             ui_content.label(format!("File loaded: {:?}", self.stl_file));
             if ui_content.button("Load Hydrostatics").clicked() {
-                if let Some(path) = rfd::FileDialog::new().
-                    add_filter("stl", &["stl"]).
-                    pick_file()
-                {
-                    self.stl_file = path
-                }
-
-                let hull = NavalHull::from_stl(self.stl_file.to_str().unwrap()).unwrap();
-                let vessel = Vessel::new(hull);
-                let _calc = HydrostaticsCalculator::new(&vessel, density(WaterType::Salt, Temp::Twenty));
-                println!("Calculated vessel")
+                self.open_file();
+                self.run_calculations();
             }
         });
     }
 }
+

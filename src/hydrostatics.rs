@@ -1,13 +1,16 @@
 use std::path::PathBuf;
+use std::ptr::eq;
 use eframe::Frame;
 use egui::Ui;
 use navaltoolbox::{Hull as NavalHull, HydrostaticsCalculator, Vessel};
-use crate::density_of_water::{density,Temp, WaterType};
+use crate::density_of_water::{density, WaterTemperature, WaterType};
 
 #[derive(Default)]
 pub(crate) struct Hydrostatics {
     stl_file: PathBuf,
     hull: Hull,
+    water_type: WaterType,
+    water_temp: WaterTemperature,
 }
 
 #[derive(Default)]
@@ -34,11 +37,34 @@ impl Hydrostatics {
 
         if let Ok(hull) = NavalHull::from_stl(path_str) {
             let vessel = Vessel::new(hull);
-            let rho = density(WaterType::Salt, Temp::Twenty);
+            let rho = density(&mut self.water_type, &mut self.water_temp);
             let _calc = HydrostaticsCalculator::new(&vessel, rho);
 
             println!("Calculated vessel displacement/hydrostatics");
         }
+    }
+
+    fn display_combo_box(&mut self, ui: &mut Ui) {
+        ui.vertical_centered(|ui| {ui.label("Water")});
+        ui.horizontal(|ui|{
+            egui::ComboBox::from_label("Type")
+                .selected_text(self.water_type.label())
+                .show_ui(ui, |ui| {
+                    ui.selectable_value(&mut self.water_type, WaterType::Salt, "Salt");
+                    ui.selectable_value(&mut self.water_type, WaterType::Fresh, "Fresh");
+                });
+
+            egui::ComboBox::from_label("Temperature")
+                .selected_text(self.water_temp.label())
+                .show_ui(ui, |ui| {
+                    ui.selectable_value(&mut self.water_temp, WaterTemperature::Zero, "0°C");
+                    ui.selectable_value(&mut self.water_temp, WaterTemperature::Ten, "10°C");
+                    ui.selectable_value(&mut self.water_temp, WaterTemperature::Twenty, "20°C");
+                    ui.selectable_value(&mut self.water_temp, WaterTemperature::Thirty, "30°C");
+                });
+        });
+
+        ui.add_space(20.0);
     }
 
     fn display_footer(&mut self, ui: &mut Ui) {
@@ -58,12 +84,13 @@ impl eframe::App for Hydrostatics {
         egui::Panel::bottom("footer_panel")
             .resizable(false)
             .min_size(30.0)
-            .show_inside(ui, |ui_content| {
-                self.display_footer(ui_content)
+            .show_inside(ui, |ui| {
+                self.display_footer(ui)
             });
 
-        egui::CentralPanel::default_margins().show_inside(ui, |ui_content| {
-            if ui_content.button("Load Hydrostatics").clicked() {
+        egui::CentralPanel::default_margins().show_inside(ui, |ui| {
+            self.display_combo_box(ui);
+            if ui.button("Load Hydrostatics").clicked() {
                 self.run_calculations();
             }
         });

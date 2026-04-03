@@ -42,7 +42,11 @@ impl Hydrostatics {
     }
 
     fn display_footer(&mut self, ui: &mut Ui) {
+        ui.add_space(4.0);
         ui.horizontal(|ui| {
+            if ui.button("📂").clicked() {
+                self.open_file()
+            }
             ui.label("File loaded: ");
             ui.label(self.stl_file.to_str().unwrap());
         });
@@ -60,7 +64,6 @@ impl eframe::App for Hydrostatics {
 
         egui::CentralPanel::default_margins().show_inside(ui, |ui_content| {
             if ui_content.button("Load Hydrostatics").clicked() {
-                self.open_file();
                 self.run_calculations();
             }
         });

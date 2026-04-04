@@ -48,8 +48,8 @@ impl Hydrostatics {
                 self.toasts.success("Hydrostatics Calculated Successfully!");
                 ctx.request_repaint();
             }
-            Err(e) => {
-                self.toasts.error(format!("STL Error: {}", e));
+            Err(_) => {
+                self.toasts.error("STL Error : File not found");
                 ctx.request_repaint();
             }
         }

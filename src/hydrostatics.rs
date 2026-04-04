@@ -3,6 +3,7 @@ use eframe::Frame;
 use egui::Ui;
 use egui_notify::{Toasts};
 use navaltoolbox::{Hull as NavalHull, HydrostaticsCalculator, Vessel};
+use navaltoolbox::hydrostatics::TankOptions;
 use crate::density_of_water::{density, WaterTemperature, WaterType};
 
 #[derive(Default)]
@@ -11,7 +12,7 @@ pub(crate) struct Hydrostatics {
     hull: Hull,
     water_type: WaterType,
     water_temp: WaterTemperature,
-    
+
     toasts: Toasts
 }
 
@@ -58,7 +59,7 @@ impl Hydrostatics {
     }
 
     fn display_combo_box(&mut self, ui: &mut Ui) {
-        ui.vertical_centered(|ui| {ui.label("Water")});
+        ui.vertical_centered(|ui| {ui.label("Water Density")});
         ui.horizontal(|ui|{
             egui::ComboBox::from_label("Type")
                 .selected_text(self.water_type.label())

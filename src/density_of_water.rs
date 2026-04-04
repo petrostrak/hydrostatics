@@ -1,4 +1,4 @@
-#[derive(Debug,Default,PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub enum WaterType {
     #[default]
     Fresh,
@@ -9,12 +9,12 @@ impl WaterType {
     pub fn label(&self) -> &str {
         match self {
             WaterType::Fresh => "Fresh",
-            WaterType::Salt => "Salt"
+            WaterType::Salt => "Salt",
         }
     }
 }
 
-#[derive(Debug,Default,PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub enum WaterTemperature {
     #[default]
     Zero,
@@ -29,7 +29,7 @@ impl WaterTemperature {
             WaterTemperature::Zero => "0°C",
             WaterTemperature::Ten => "10°C",
             WaterTemperature::Twenty => "20°C",
-            WaterTemperature::Thirty => "30°C"
+            WaterTemperature::Thirty => "30°C",
         }
     }
 }
@@ -43,6 +43,6 @@ pub fn density(water: &mut WaterType, temp: &mut WaterTemperature) -> f64 {
         (WaterType::Salt, WaterTemperature::Zero) => 1028.0,
         (WaterType::Salt, WaterTemperature::Ten) => 1027.0,
         (WaterType::Salt, WaterTemperature::Twenty) => 1025.0,
-        (WaterType::Salt, WaterTemperature::Thirty) => 1022.0
+        (WaterType::Salt, WaterTemperature::Thirty) => 1022.0,
     }
 }

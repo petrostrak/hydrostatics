@@ -77,6 +77,20 @@ impl Hydrostatics {
         ui.separator();
     }
 
+    fn display_hull_info(&mut self, ui: &mut Ui) {
+        ui.vertical_centered(|ui| ui.label("Hull"));
+        ui.horizontal(|ui| {
+            ui.label("Draft");
+            ui.add(
+                egui::DragValue::new(&mut self.hull.draft)
+                    .speed(0.5)
+                    .range(0.5..=15.0)
+                    .suffix(" ft"),
+            );
+        });
+        ui.separator();
+    }
+
     fn footer(&mut self, ui: &mut Ui) {
         ui.add_space(4.0);
         ui.horizontal(|ui| {
@@ -98,6 +112,7 @@ impl Hydrostatics {
     fn display_central_panel(&mut self, ui: &mut Ui) {
         egui::CentralPanel::default_margins().show_inside(ui, |ui| {
             self.display_combo_box(ui);
+            self.display_hull_info(ui);
             if ui.button("Load Hydrostatics").clicked() {
                 self.run_calculations(ui.ctx());
             }
